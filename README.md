@@ -67,9 +67,12 @@ Options:
                                 secret, service  [required]
   --config PATH                 Config file location  [default: .yamlvalidator.yml]
   --cache-file PATH             Group membership cache  [default: .membership_cache]
-  --skip-team-labels-check      Skip the team name check
-  --skip-group-check            Skip the group existence check
-  --skip-service-account-check  Skip the service account existence check
+  --skip-team-labels-check / --no-skip-team-labels-check
+                                Skip the team name check
+  --skip-group-check / --no-skip-group-check
+                                Skip the group existence check
+  --skip-service-account-check / --no-skip-service-account-check
+                                Skip the service account existence check
   --show-config                 Print the effective configuration
   --help                        Show this message and exit
 ```
@@ -92,6 +95,13 @@ for a documented example. The main options:
 
 The `--skip-*` flags disable the checks that talk to GCP or to the network,
 which is what you want when running locally or in a test.
+
+### Precedence
+
+**A `--skip-*` flag wins when it is passed; otherwise the config file value
+stands, and its default if the file does not set it.** Pass `--no-skip-...`
+to force a check back on from the command line when the config file disables
+it.
 
 ## Adding a resource type
 

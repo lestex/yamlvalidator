@@ -49,6 +49,20 @@ def config_file_cli_params_set(pytestconfig, config_obj):
 
 
 @pytest.fixture
+def config_file_skips_enabled(pytestconfig, config_obj):
+    """A config file that turns the optional checks off on its own."""
+    config_obj['skip_team_labels_check'] = True
+    config_obj['skip_group_check'] = True
+    config_obj['skip_service_account_check'] = True
+    path = os.path.join(pytestconfig.rootpath, '.config.yml')
+    with open(path, 'w') as file:
+        yaml.dump(config_obj, file)
+
+    yield path
+    os.remove(path)
+
+
+@pytest.fixture
 def config_file_cli_params_not_set(pytestconfig, config_obj):
     path = os.path.join(pytestconfig.rootpath, '.config.yml')
     with open(path, 'w') as file:

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 import typer
 from typing_extensions import Annotated
@@ -75,27 +76,32 @@ def main(
             help='Config file location',
         ),
     ] = Path('.yamlvalidator.yml'),
+    # these default to None so that "not passed" stays distinguishable
+    # from "passed false" and the config file can be left in charge
     skip_team_labels_check: Annotated[
-        bool,
+        Optional[bool],
         typer.Option(
-            '--skip-team-labels-check',
-            help='skip team label check',
+            '--skip-team-labels-check/--no-skip-team-labels-check',
+            help='skip team label check; overrides the config file',
+            show_default=False,
         ),
-    ] = False,
+    ] = None,
     skip_group_check: Annotated[
-        bool,
+        Optional[bool],
         typer.Option(
-            '--skip-group-check',
-            help='skip group check',
+            '--skip-group-check/--no-skip-group-check',
+            help='skip group check; overrides the config file',
+            show_default=False,
         ),
-    ] = False,
+    ] = None,
     skip_service_account_check: Annotated[
-        bool,
+        Optional[bool],
         typer.Option(
-            '--skip-service-account-check',
-            help='skip service account check',
+            '--skip-service-account-check/--no-skip-service-account-check',
+            help='skip service account check; overrides the config file',
+            show_default=False,
         ),
-    ] = False,
+    ] = None,
     show_config: Annotated[
         bool,
         typer.Option(
@@ -116,24 +122,16 @@ def main(
     validator = get_validator(type_)
     config = get_config(str(config_file))
 
-    # config file takes presedence over cli params
-    if (
-        config.skip_team_labels_check is None
-        or config.skip_team_labels_check != skip_team_labels_check
-    ):
-        config.update('skip_team_labels_check', skip_team_labels_check)
-
-    if (
-        config.skip_group_check is None
-        or config.skip_group_check != skip_group_check
-    ):
-        config.update('skip_group_check', skip_group_check)
-
-    if (
-        config.skip_service_account_check is None
-        or config.skip_service_account_check != skip_service_account_check
-    ):
-        config.update('skip_service_account_check', skip_service_account_check)
+    # a cli flag takes precedence when it is passed, otherwise the value
+    # from the config file (or its default) stands
+    cli_flags = {
+        'skip_team_labels_check': skip_team_labels_check,
+        'skip_group_check': skip_group_check,
+        'skip_service_account_check': skip_service_account_check,
+    }
+    for flag, value in cli_flags.items():
+        if value is not None:
+            config.update(flag, value)
 
     # pass valid cache file to a config object
     config.update('cache_file', str(cache_file))

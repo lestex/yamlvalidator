@@ -72,6 +72,51 @@ def test_cli_with_params_not_set_config(
     assert '"skip_team_labels_check": true' in result.stdout
 
 
+def test_cli_config_file_skips_survive_unpassed_flags(
+    config_file_skips_enabled, membership_cache
+):
+    """A skip set only in the config file must reach the runtime config.
+
+    The --skip-* flags are not passed here, so nothing may overwrite them.
+    """
+    _ = membership_cache
+    result = runner.invoke(
+        app,
+        [
+            '--type',
+            'role',
+            '--config',
+            config_file_skips_enabled,
+            '--show-config',
+        ],
+    )
+
+    assert '"skip_group_check": true' in result.stdout
+    assert '"skip_service_account_check": true' in result.stdout
+    assert '"skip_team_labels_check": true' in result.stdout
+
+
+def test_cli_flag_overrides_config_file(
+    config_file_skips_enabled, membership_cache
+):
+    """A passed flag wins over the config file."""
+    _ = membership_cache
+    result = runner.invoke(
+        app,
+        [
+            '--type',
+            'role',
+            '--config',
+            config_file_skips_enabled,
+            '--no-skip-group-check',
+            '--show-config',
+        ],
+    )
+
+    assert '"skip_group_check": false' in result.stdout
+    assert '"skip_team_labels_check": true' in result.stdout
+
+
 def test_cli_invalid_bucket(
     config_file, invalid_bucket_file, membership_cache
 ):

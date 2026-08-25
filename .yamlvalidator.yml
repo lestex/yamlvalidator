@@ -40,7 +40,9 @@ allowed_service_accounts:
 # Leave unset to disable. default: null
 # team_validation_url: https://teams.example.com/api/team?name=
 
-# Checks can also be skipped from the CLI with the matching --skip-* flag.
+# These values stand unless the matching --skip-* flag is passed on the
+# command line, which overrides them. Use --no-skip-<name> to force a check
+# back on. An unknown key anywhere in this file is a hard error.
 # default: false
 skip_team_labels_check: false
 skip_group_check: false
