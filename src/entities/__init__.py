@@ -1,6 +1,7 @@
 import importlib
 
 from src.entities.bucket import Bucket
+from src.entities.role import Role
 from src.entities.secret import Secret
 
 
@@ -20,6 +21,7 @@ def get_entity(type_: str) -> type:
     entities = {
         'bucket': Bucket,
         'secret': Secret,
+        'role': Role,
     }
     entity = entities[type_]
     return entity
