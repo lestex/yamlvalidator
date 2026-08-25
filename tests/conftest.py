@@ -95,6 +95,17 @@ def invalid_bucket_file(pytestconfig, invalid_bucket_object):
 
 
 @pytest.fixture
+def malformed_bucket_file(pytestconfig):
+    """A resource file whose top level is a list, not a mapping."""
+    path = os.path.join(pytestconfig.rootpath, 'malformed_bucket.yml')
+    with open(path, 'w') as file:
+        file.write('- one\n- two\n')
+
+    yield path
+    os.remove(path)
+
+
+@pytest.fixture
 def valid_role_object() -> tuple:
     return {
         'testbrowser': {

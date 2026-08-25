@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+import yaml
 from typing_extensions import Annotated
 
 from src.config import Config
@@ -9,6 +10,7 @@ from src.config import get_config
 from src.entities import get_entity
 from src.entities import get_supported_entities
 from src.errors import Errors
+from src.utils import NotAMappingError
 from src.utils import list_files
 from src.utils import read_file
 from src.validators import get_validator
@@ -42,9 +44,22 @@ def validate(validator: BaseValidator, type_: str, config: Config) -> Errors:
     errors = Errors()
 
     for filename in list_files(type_):
-        objects = read_file(filename)
+        try:
+            objects = read_file(filename)
+        except (NotAMappingError, yaml.YAMLError) as exc:
+            # a CI gate must name the offending file rather than
+            # exit with a traceback
+            errors.add(filename, [str(exc)])
+            continue
 
         for obj_name, obj in objects.items():
+            if not isinstance(obj, dict):
+                errors.add(
+                    obj_name,
+                    [f'must be a mapping, found {type(obj).__name__}'],
+                )
+                continue
+
             entity = get_entity(type_)(**obj)
             config.update('filename', filename)
             config.update('obj_name', obj_name)
@@ -120,7 +135,10 @@ def main(
 ):
     """Validate yml files for a specific resource type."""
     validator = get_validator(type_)
-    config = get_config(str(config_file))
+    try:
+        config = get_config(str(config_file))
+    except (NotAMappingError, yaml.YAMLError) as exc:
+        raise typer.BadParameter(str(exc), param_hint='--config') from exc
 
     # a cli flag takes precedence when it is passed, otherwise the value
     # from the config file (or its default) stands

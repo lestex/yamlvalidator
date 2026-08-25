@@ -5,10 +5,29 @@ from typing import Optional
 import yaml
 
 
+class NotAMappingError(ValueError):
+    """A YAML file's top level is not a mapping of resources."""
+
+
 def read_file(filename: str) -> dict:
-    """Reads a YAML file. An empty file gives an empty dict."""
+    """Reads a YAML file. An empty file gives an empty dict.
+
+    Raises:
+        NotAMappingError: the file's top level is not a mapping.
+    """
     with open(filename) as f:
-        return yaml.safe_load(f) or {}
+        data = yaml.safe_load(f)
+
+    if data is None:
+        return {}
+
+    if not isinstance(data, dict):
+        raise NotAMappingError(
+            f'{filename} must contain a mapping of resources, '
+            f'found {type(data).__name__}'
+        )
+
+    return data
 
 
 def list_files(type_: str, path: Optional[str] = None) -> Generator:

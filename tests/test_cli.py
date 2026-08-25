@@ -134,6 +134,20 @@ def test_cli_invalid_bucket(
     assert result.stdout == errors_output
 
 
+def test_cli_malformed_yaml_file(
+    config_file, malformed_bucket_file, membership_cache
+):
+    """A bad file must be reported by name, not raise a traceback."""
+    _ = malformed_bucket_file, membership_cache
+    result = runner.invoke(app, ['--type', 'bucket', '--config', config_file])
+
+    # a clean exit, not an AttributeError escaping read_file
+    assert isinstance(result.exception, SystemExit)
+    assert result.exit_code == 1
+    assert 'malformed_bucket.yml' in result.stdout
+    assert 'must contain a mapping of resources' in result.stdout
+
+
 def test_cli_valid_role(config_file, valid_role_file, membership_cache):
     """Run CLI with valid role"""
     _ = valid_role_file, membership_cache
