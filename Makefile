@@ -37,7 +37,7 @@ release: ## package and upload a release
 install-local: ## install scaffold locally
 	@echo "Make sure you activated the virtual env with: 'source .venv/bin/activate'"
 	python -m pip install --upgrade pip
-	pip install -e .
+	pip install -e ".[dev]"
 
 test: ## run tests
 	@pytest
