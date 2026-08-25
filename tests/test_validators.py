@@ -1,10 +1,10 @@
 import pytest
 
-from src.validators import get_validator
-from src.validators.bucket import BucketValidator
-from src.validators.role import RoleValidator
-from src.validators.secret import SecretValidator
-from src.validators.service_account import ServiceAccountValidator
+from yamlvalidator.validators import get_validator
+from yamlvalidator.validators.bucket import BucketValidator
+from yamlvalidator.validators.role import RoleValidator
+from yamlvalidator.validators.secret import SecretValidator
+from yamlvalidator.validators.service_account import ServiceAccountValidator
 
 test_data = [
     # type, result

@@ -1,12 +1,12 @@
 import pytest
 
-from src.config import get_config
-from src.entities import get_entity
-from src.rules.key import MIN_ROTATION_PERIOD_SECONDS
-from src.rules.key import VALID_KEYPURPOSE
-from src.rules.key import VALID_PROTECTION_LEVELS
-from src.rules.key import validate_key_rotation_period
-from src.validators.key import KeyValidator
+from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
+from yamlvalidator.rules.key import MIN_ROTATION_PERIOD_SECONDS
+from yamlvalidator.rules.key import VALID_KEYPURPOSE
+from yamlvalidator.rules.key import VALID_PROTECTION_LEVELS
+from yamlvalidator.rules.key import validate_key_rotation_period
+from yamlvalidator.validators.key import KeyValidator
 
 
 def test_key_fields():

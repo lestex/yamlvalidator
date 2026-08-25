@@ -1,8 +1,8 @@
 import pytest
 
-from src.config import get_config
-from src.entities import get_entity
-from src.validators.role import RoleValidator
+from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
+from yamlvalidator.validators.role import RoleValidator
 
 
 def test_role_fields():

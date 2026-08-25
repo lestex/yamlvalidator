@@ -2,14 +2,14 @@ import importlib
 
 import pytest
 
-from src.entities import get_supported_entities
-from src.utils import NotAMappingError
-from src.utils import list_files
-from src.utils import read_file
+from yamlvalidator.entities import get_supported_entities
+from yamlvalidator.utils import NotAMappingError
+from yamlvalidator.utils import list_files
+from yamlvalidator.utils import read_file
 
 
 def test_get_supported_entities_method():
-    modules = importlib.import_module('src.entities')
+    modules = importlib.import_module('yamlvalidator.entities')
     right = sorted(
         [
             'bqdataset',

@@ -4,19 +4,19 @@ from unittest.mock import patch
 
 from googleapiclient.discovery import HttpError
 
-from src.config import get_config
-from src.rules import _validate_filename
-from src.rules import _validate_team
-from src.rules.permissions import _check_group_exists
-from src.rules.permissions import _check_member_service_account
-from src.rules.permissions import _check_member_user
-from src.rules.permissions import _check_service_account_exists
-from src.rules.permissions import _valid_sa_domain
+from yamlvalidator.config import get_config
+from yamlvalidator.rules import _validate_filename
+from yamlvalidator.rules import _validate_team
+from yamlvalidator.rules.permissions import _check_group_exists
+from yamlvalidator.rules.permissions import _check_member_service_account
+from yamlvalidator.rules.permissions import _check_member_user
+from yamlvalidator.rules.permissions import _check_service_account_exists
+from yamlvalidator.rules.permissions import _valid_sa_domain
 
 
 # __init__.py functions
 # _validate_team
-@patch('src.rules.requests')
+@patch('yamlvalidator.rules.requests')
 def test_invalid_team_name(requests_mock):
     config_mock = MagicMock(skip_team_labels_check=False)
     response_mock = MagicMock(status_code=404)
@@ -81,9 +81,9 @@ def test_check_service_account_exists():
     yes = 'existent_sa'
     no = 'nonexistent_sa'
 
-    with patch('src.rules.permissions.GCPClient', MockGCPClient):
+    with patch('yamlvalidator.rules.permissions.GCPClient', MockGCPClient):
         with patch(
-            'src.rules.permissions._valid_sa_domain',
+            'yamlvalidator.rules.permissions._valid_sa_domain',
             MagicMock(return_value=True),
         ):
             errors = _check_service_account_exists(yes, sa_config)
@@ -106,9 +106,9 @@ class RaisingGCPClient:
 
 def test_check_service_account_api_error_is_not_absence():
     """A 403 must read as "could not verify", not "create it first"."""
-    with patch('src.rules.permissions.GCPClient', RaisingGCPClient):
+    with patch('yamlvalidator.rules.permissions.GCPClient', RaisingGCPClient):
         with patch(
-            'src.rules.permissions._valid_sa_domain',
+            'yamlvalidator.rules.permissions._valid_sa_domain',
             MagicMock(return_value=True),
         ):
             errors = _check_service_account_exists('some_sa', sa_config)
@@ -170,7 +170,7 @@ def test_group_cache_is_built_once(config_file):
     cfg.update('cache_file', 'dummy_cache_path')
 
     MockFileCache.opened = 0
-    with patch('src.config.FileCache', MockFileCache):
+    with patch('yamlvalidator.config.FileCache', MockFileCache):
         for _ in range(50):
             _check_group_exists('a_group', cfg)
 

@@ -48,7 +48,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-yamlvalidator = "src.main:app"
+yamlvalidator = "yamlvalidator.main:app"
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -69,7 +69,7 @@ select = [
 [tool.ruff.lint.isort]
 # one import per line, as the google isort profile used to enforce
 force-single-line = true
-known-first-party = ["src"]
+known-first-party = ["yamlvalidator"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F811"]
@@ -91,8 +91,8 @@ filterwarnings = [
 
 [tool.hatch.build.targets.wheel]
 include = [
-  "src",
+  "yamlvalidator",
 ]
 
 [tool.hatch.version]
-path = "src/__init__.py"
+path = "yamlvalidator/__init__.py"

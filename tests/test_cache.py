@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import yaml
 
-from src.lib.cache import FileCache
+from yamlvalidator.lib.cache import FileCache
 
 mock_data = {'key': {'exist': True}}
 

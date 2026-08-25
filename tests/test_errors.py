@@ -1,4 +1,4 @@
-from src.errors import Errors
+from yamlvalidator.errors import Errors
 
 
 def test_errors_add_non_existed():

@@ -1,8 +1,8 @@
 import pytest
 
-from src.config import get_config
-from src.entities import get_entity
-from src.validators.bqdataset import BQDatasetValidator
+from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
+from yamlvalidator.validators.bqdataset import BQDatasetValidator
 
 
 def test_bqdataset_fields():

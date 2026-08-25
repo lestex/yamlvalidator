@@ -1,8 +1,8 @@
 import pytest
 
-from src.config import get_config
-from src.entities import get_entity
-from src.validators.keyring import KeyringValidator
+from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
+from yamlvalidator.validators.keyring import KeyringValidator
 
 
 def test_keyring_fields():

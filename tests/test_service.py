@@ -1,8 +1,8 @@
 import pytest
 
-from src.config import get_config
-from src.entities import get_entity
-from src.validators.service import ServiceValidator
+from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
+from yamlvalidator.validators.service import ServiceValidator
 
 
 def test_service_fields():

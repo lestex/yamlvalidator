@@ -120,7 +120,7 @@ so `--skip-group-check` needs no cache file present.
 
 The four layers are independent, so a new resource type is four small files.
 
-1. **Entity** — a `@dataclass` subclass of `BaseYamlEntity` in `src/entities/`
+1. **Entity** — a `@dataclass` subclass of `BaseYamlEntity` in `yamlvalidator/entities/`
    describing the YAML shape. `name` comes from the base class. To validate
    unknown fields, define `__init__` as:
 
@@ -130,22 +130,22 @@ The four layers are independent, so a new resource type is four small files.
            setattr(self, k, v)
    ```
 
-   Register it in the dictionary in `src/entities/__init__.py`.
+   Register it in the dictionary in `yamlvalidator/entities/__init__.py`.
 
-2. **Rules** — functions in `src/rules/` with the signature:
+2. **Rules** — functions in `yamlvalidator/rules/` with the signature:
 
    ```python
    def validate_name(entity: BaseYamlEntity, config: Config) -> list[str]:
    ```
 
    Each returns a list of error strings, empty when the entity is valid.
-   Common rules live in `src/rules/__init__.py`, permission-specific ones in
-   `src/rules/permissions.py`.
+   Common rules live in `yamlvalidator/rules/__init__.py`, permission-specific ones in
+   `yamlvalidator/rules/permissions.py`.
 
-3. **Validator** — a `BaseValidator` subclass in `src/validators/` with a
+3. **Validator** — a `BaseValidator` subclass in `yamlvalidator/validators/` with a
    `checks` dictionary mapping names to rule functions.
 
-4. Register the validator in the dictionary in `src/validators/__init__.py`.
+4. Register the validator in the dictionary in `yamlvalidator/validators/__init__.py`.
 
 ## Development
 

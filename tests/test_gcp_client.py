@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from googleapiclient.discovery import HttpError
 
-from src.lib.gcp_client import GCPClient
+from yamlvalidator.lib.gcp_client import GCPClient
 
 
 @pytest.fixture
@@ -24,7 +24,7 @@ def test_initialization_with_default_credentials(gcp_client):
     assert gcp_client.project == 'project_id'
 
 
-@patch('src.lib.gcp_client.build')
+@patch('yamlvalidator.lib.gcp_client.build')
 def test_service_account_exists(mock_build, gcp_client):
     mock_service = Mock()
     mock_build.return_value = mock_service
@@ -44,7 +44,7 @@ def _http_error(status: str) -> HttpError:
     return HttpError(resp=resp, content=b'{}')
 
 
-@patch('src.lib.gcp_client.build')
+@patch('yamlvalidator.lib.gcp_client.build')
 def test_service_account_exists_404_is_absence(mock_build, gcp_client):
     """A 404 is the one status that means "does not exist"."""
     mock_service = Mock()
@@ -56,7 +56,7 @@ def test_service_account_exists_404_is_absence(mock_build, gcp_client):
     assert gcp_client.service_account_exists('test-service-account') is False
 
 
-@patch('src.lib.gcp_client.build')
+@patch('yamlvalidator.lib.gcp_client.build')
 def test_service_account_exists_403_raises(mock_build, gcp_client):
     """A permissions error must not be reported as absence."""
     mock_service = Mock()

@@ -1,6 +1,6 @@
 from typer.testing import CliRunner
 
-from src.main import app
+from yamlvalidator.main import app
 
 runner = CliRunner(env={'TERM': 'dumb'})
 

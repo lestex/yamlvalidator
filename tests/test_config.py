@@ -4,8 +4,8 @@ import os
 import pytest
 import yaml
 
-from src.config import UnknownConfigKeyError
-from src.config import get_config
+from yamlvalidator.config import UnknownConfigKeyError
+from yamlvalidator.config import get_config
 
 
 def test_config(config_obj, config_file):

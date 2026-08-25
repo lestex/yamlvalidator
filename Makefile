@@ -43,7 +43,7 @@ test: ## run tests
 	@pytest
 
 coverage: ## run tests with coverage
-	@pytest --cov=src
+	@pytest --cov=yamlvalidator
 
 create-results: ## create test_results directory
 	mkdir -p $(TEST_RESULTS)
@@ -59,11 +59,11 @@ coverage-clean: ## remove the coverage directory
 	rm .coverage
 
 format: ## format python code
-	@ruff format src tests
+	@ruff format yamlvalidator tests
 
 lint: ## run linters
-	@ruff check src tests
-	@ruff format --check src tests
+	@ruff check yamlvalidator tests
+	@ruff format --check yamlvalidator tests
 
 precommit-install: ## install pre-commit
 	@pre-commit install
