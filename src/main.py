@@ -51,8 +51,7 @@ def validate(validator: BaseValidator, type_: str, config: Config) -> Errors:
             validator.validate(entity, config)
 
             if validator.errors:
-                entity_errors = validator.errors.copy()
-                errors.add(obj_name, entity_errors)
+                errors.add(obj_name, validator.errors)
                 validator.clear()
 
     return errors

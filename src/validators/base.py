@@ -8,7 +8,10 @@ from src.entities.base import BaseYamlEntity
 class BaseValidator(ABC):
     """Abstract validator class, must not be instantiated directly"""
 
-    errors: list[str] = []
+    def __init__(self) -> None:
+        # per instance: a class attribute would be shared by every
+        # validator subclass
+        self.errors: list[str] = []
 
     def clear(self) -> None:
         """Clears errors for validator"""

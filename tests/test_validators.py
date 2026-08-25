@@ -36,3 +36,15 @@ def test_validator_properties(test_input, expected):
 
     validator.clear()
     assert validator.errors == []
+
+
+def test_validator_errors_are_not_shared():
+    """Errors must not leak between validator instances or subclasses."""
+    bucket = get_validator('bucket')
+    secret = get_validator('secret')
+    another_bucket = get_validator('bucket')
+
+    bucket.errors.append('test')
+
+    assert secret.errors == []
+    assert another_bucket.errors == []
