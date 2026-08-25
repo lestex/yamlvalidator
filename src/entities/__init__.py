@@ -1,6 +1,7 @@
 import importlib
 
 from src.entities.bqdataset import BQDataset
+from src.entities.bqtable import BQTable
 from src.entities.bucket import Bucket
 from src.entities.key import Key
 from src.entities.keyring import Keyring
@@ -32,6 +33,7 @@ def get_entity(type_: str) -> type:
         'keyring': Keyring,
         'key': Key,
         'bqdataset': BQDataset,
+        'bqtable': BQTable,
     }
     entity = entities[type_]
     return entity
