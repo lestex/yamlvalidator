@@ -1,5 +1,6 @@
 import importlib
 
+from src.entities.bqdataset import BQDataset
 from src.entities.bucket import Bucket
 from src.entities.key import Key
 from src.entities.keyring import Keyring
@@ -30,6 +31,7 @@ def get_entity(type_: str) -> type:
         'service': Service,
         'keyring': Keyring,
         'key': Key,
+        'bqdataset': BQDataset,
     }
     entity = entities[type_]
     return entity

@@ -1,4 +1,5 @@
 from src.validators.base import BaseValidator
+from src.validators.bqdataset import BQDatasetValidator
 from src.validators.bucket import BucketValidator
 from src.validators.key import KeyValidator
 from src.validators.keyring import KeyringValidator
@@ -18,6 +19,7 @@ def get_validator(type_: str) -> BaseValidator:
         'service': ServiceValidator(),
         'keyring': KeyringValidator(),
         'key': KeyValidator(),
+        'bqdataset': BQDatasetValidator(),
     }
     validator = validators[type_]
     return validator
