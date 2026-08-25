@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.role import Role
 from src.rules.role import validate_fields
 from src.rules.role import validate_filename
@@ -26,9 +25,3 @@ class RoleValidator(BaseValidator):
     """Role validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)

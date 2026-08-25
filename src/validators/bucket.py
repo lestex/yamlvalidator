@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.bucket import Bucket
 from src.rules.bucket import validate_fields
 from src.rules.bucket import validate_filename
@@ -30,9 +29,3 @@ class BucketValidator(BaseValidator):
     """Buckets validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)

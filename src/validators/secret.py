@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.secret import Secret
 from src.rules.secret import validate_category
 from src.rules.secret import validate_fields
@@ -34,9 +33,3 @@ class SecretValidator(BaseValidator):
     """Secrets validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)

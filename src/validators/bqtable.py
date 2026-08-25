@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.bqtable import BQTable
 from src.rules.bqtable import validate_dataset_id
 from src.rules.bqtable import validate_fields
@@ -28,9 +27,3 @@ class BQTableValidator(BaseValidator):
     """BQTable validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)

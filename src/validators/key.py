@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.key import Key
 from src.rules.key import validate_fields
 from src.rules.key import validate_filename
@@ -34,9 +33,3 @@ class KeyValidator(BaseValidator):
     """Keyring validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)

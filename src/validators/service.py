@@ -1,7 +1,6 @@
 from typing import Callable
 
 from src.config import Config
-from src.entities.base import BaseYamlEntity
 from src.entities.service import Service
 from src.rules.service import validate_disable_on_destroy
 from src.rules.service import validate_fields
@@ -24,9 +23,3 @@ class ServiceValidator(BaseValidator):
     """Service validator class"""
 
     checks: dict = checks.copy()
-
-    def validate(self, entity: BaseYamlEntity, config: Config) -> None:
-        for _, check_func in self.checks.items():
-            err = check_func(entity, config)
-            if err:
-                self.errors.extend(err)
