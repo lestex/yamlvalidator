@@ -7,6 +7,7 @@ from googleapiclient.discovery import HttpError
 
 from yamlvalidator.config import get_config
 from yamlvalidator.entities import get_entity
+from yamlvalidator.iam import Member
 from yamlvalidator.rules import _validate_filename
 from yamlvalidator.rules import _validate_team
 from yamlvalidator.rules import validate_non_empty
@@ -34,20 +35,31 @@ def test_invalid_team_name(requests_mock):
 sa_config = MagicMock(sa_project_prefix='my-org-')
 
 
+def sa(identifier: str) -> Member:
+    """A serviceAccount member with the given identifier."""
+    return Member('serviceAccount', identifier, f'serviceAccount:{identifier}')
+
+
 def test_valid_sa_domain_invalid_domain():
-    assert not _valid_sa_domain('user@invalid.com', sa_config)
+    assert not _valid_sa_domain(sa('user@invalid.com'), sa_config)
+
+
+def test_valid_sa_domain_managed_domain():
+    assert _valid_sa_domain(
+        sa('x@my-org-infra.iam.gserviceaccount.com'), sa_config
+    )
 
 
 def test_valid_sa_domain_no_divider():
-    assert not _valid_sa_domain('username', sa_config)
+    assert not _valid_sa_domain(sa('username'), sa_config)
 
 
 def test_valid_sa_domain_empty_string():
-    assert not _valid_sa_domain('', sa_config)
+    assert not _valid_sa_domain(sa(''), sa_config)
 
 
 def test_valid_sa_domain_whitespace_string():
-    assert not _valid_sa_domain('   ', sa_config)
+    assert not _valid_sa_domain(sa('   '), sa_config)
 
 
 # _validate_filename
@@ -90,10 +102,10 @@ def test_check_service_account_exists():
             'yamlvalidator.rules.permissions._valid_sa_domain',
             MagicMock(return_value=True),
         ):
-            errors = _check_service_account_exists(yes, sa_config)
+            errors = _check_service_account_exists(sa(yes), sa_config)
             assert errors == []
 
-            errors = _check_service_account_exists(no, sa_config)
+            errors = _check_service_account_exists(sa(no), sa_config)
             assert errors == [
                 "'nonexistent_sa' doesn't exist in GCP, create it first"
             ]
@@ -115,7 +127,7 @@ def test_check_service_account_api_error_is_not_absence():
             'yamlvalidator.rules.permissions._valid_sa_domain',
             MagicMock(return_value=True),
         ):
-            errors = _check_service_account_exists('some_sa', sa_config)
+            errors = _check_service_account_exists(sa('some_sa'), sa_config)
 
     assert len(errors) == 1
     assert errors[0].startswith("could not verify 'some_sa' in GCP")
@@ -127,7 +139,10 @@ def test_check_member_user_no_allowed_domains():
     """With no domains allowed, the message must not read '[] allowed'."""
     config_mock = MagicMock(allowed_user_domains=[], allowed_user_emails=[])
 
-    errors = _check_member_user('someone@example.com', config_mock)
+    errors = _check_member_user(
+        Member('user', 'someone@example.com', 'user:someone@example.com'),
+        config_mock,
+    )
 
     assert len(errors) == 1
     assert '[]' not in errors[0]
@@ -139,7 +154,7 @@ def test_check_member_service_account_extra_at_sign():
     """An email with two '@' must be reported, not raise ValueError."""
     config_mock = MagicMock(skip_service_account_check=True)
 
-    errors = _check_member_service_account('a@b@example.com', config_mock)
+    errors = _check_member_service_account(sa('a@b@example.com'), config_mock)
 
     assert errors == ['invalid Service Account']
 

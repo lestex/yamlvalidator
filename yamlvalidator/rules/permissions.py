@@ -4,8 +4,8 @@ from typing import Union
 
 from googleapiclient.discovery import HttpError
 
-from yamlvalidator.config import GSA
 from yamlvalidator.config import Config
+from yamlvalidator.iam import Member
 from yamlvalidator.lib.gcp_client import GCPClient
 
 
@@ -71,34 +71,32 @@ def _validate_members_unique(
     return errors
 
 
-def _check_member_type(perm: str, perm_type: str, config: Config) -> list[str]:
+def _check_member_type(perm: str, member: Member, config: Config) -> list[str]:
     errors = []
-    if perm_type not in config.allowed_types:
+    if member.kind not in config.allowed_types:
         errors.append(
-            f'{perm_type!r} is not allowed in {perm!r}, '
+            f'{member.kind!r} is not allowed in {perm!r}, '
             f'must be {sorted(config.allowed_types)}'
         )
     return errors
 
 
-def _check_member_group(email: str, config: Config) -> list[str]:
+def _check_member_group(member: Member, config: Config) -> list[str]:
     errors = []
-    domain = email.rsplit('@', 1)[-1]
     allowed = config.allowed_group_domains
-    if allowed and domain not in allowed:
+    if allowed and member.domain not in allowed:
         errors.append(f'only groups from {sorted(allowed)} are allowed')
 
     # check group exist in GCP
     skip = config.skip_group_check
     if not skip:
-        errors.extend(_check_group_exists(email, config))
+        errors.extend(_check_group_exists(member.identifier, config))
     return errors
 
 
-def _check_member_service_account(email: str, config: Config) -> list[str]:
+def _check_member_service_account(member: Member, config: Config) -> list[str]:
     errors = []
-    domain = email.rsplit('@', 1)[-1]
-    if not GSA.search(domain):
+    if not member.is_service_account_email:
         errors.append('invalid Service Account')
 
     # check service account exist in GCP
@@ -108,49 +106,43 @@ def _check_member_service_account(email: str, config: Config) -> list[str]:
 
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            errors.extend(_check_service_account_exists(email, config))
+            errors.extend(_check_service_account_exists(member, config))
     return errors
 
 
-def _check_member_user(email: str, config: Config) -> list[str]:
+def _check_member_user(member: Member, config: Config) -> list[str]:
     errors = []
-    domain = email.rsplit('@', 1)[-1]
     allowed_domains = config.allowed_user_domains
     if (
-        domain not in allowed_domains
-        and email not in config.allowed_user_emails
+        member.domain not in allowed_domains
+        and member.identifier not in config.allowed_user_emails
     ):
         if allowed_domains:
             errors.append(
-                f'{email} must not be used here, only specific users or '
-                f'users from {sorted(allowed_domains)} allowed, '
+                f'{member.identifier} must not be used here, only specific '
+                f'users or users from {sorted(allowed_domains)} allowed, '
                 "use 'group' instead"
             )
         else:
             # no domain is allowed, so naming the empty list helps nobody
             errors.append(
-                f'{email} must not be used here, only specific users '
-                "are allowed, use 'group' instead"
+                f'{member.identifier} must not be used here, only specific '
+                "users are allowed, use 'group' instead"
             )
     return errors
 
 
-def _managed_sa_domain(domain: str, config: Config) -> bool:
+def _valid_sa_domain(member: Member, config: Config) -> bool:
     """True when the service account belongs to a project we manage."""
-    return domain.startswith(config.sa_project_prefix)
+    if member.is_workload_identity:
+        return False
+    return member.domain.startswith(config.sa_project_prefix)
 
 
-def _valid_sa_domain(member: str, config: Config) -> bool:
-    divider = '@'
-    if divider in member:
-        domain = member.rsplit(divider, 1)[-1]
-        return _managed_sa_domain(domain, config)
-    return False
-
-
-def _check_service_account_exists(sa: str, config: Config) -> list[str]:
+def _check_service_account_exists(member: Member, config: Config) -> list[str]:
     errors: list[str] = []
-    if not (re.match('[^/]+$', sa) and _valid_sa_domain(sa, config)):
+    sa = member.identifier
+    if not (re.match('[^/]+$', sa) and _valid_sa_domain(member, config)):
         return errors
 
     client = GCPClient()
@@ -178,40 +170,32 @@ def _check_group_exists(group: str, config: Config) -> list[str]:
     return errors
 
 
-def _check_type(member: str) -> tuple[Optional[str], Optional[str]]:
-    try:
-        grant_type, email = member.split(':')
-        return grant_type, email
-    except Exception:
-        return None, None
-
-
 # each member is any of:
 # user:username@example.com
 # group:groupname@example.com
 # serviceAccount:sa@my-project.iam.gserviceaccount.com
 # serviceAccount:my-project.svc.id.goog[namespace/some-ksa]
-def _check_member(permission: str, member: str, config: Config) -> list[str]:
+def _check_member(permission: str, raw: str, config: Config) -> list[str]:
     errors = []
-    member_type, email = _check_type(member)
-
-    # cover all edge cases
-    if not member_type or not email:
-        errors.append(f'Invalid entity: {member}')
+    member = Member.parse(raw)
+    if member is None:
+        errors.append(f'Invalid entity: {raw}')
         return errors
 
-    errors.extend(_check_member_type(permission, member_type, config))
+    errors.extend(_check_member_type(permission, member, config))
 
     # workload identity service accounts have no '@' and need no further
     # checks beyond the member type
-    if '@' in email:
-        match member_type:
-            case 'user':
-                errors.extend(_check_member_user(email, config))
-            case 'group':
-                errors.extend(_check_member_group(email, config))
-            case 'serviceAccount':
-                errors.extend(_check_member_service_account(email, config))
+    if member.is_workload_identity:
+        return errors
+
+    match member.kind:
+        case 'user':
+            errors.extend(_check_member_user(member, config))
+        case 'group':
+            errors.extend(_check_member_group(member, config))
+        case 'serviceAccount':
+            errors.extend(_check_member_service_account(member, config))
 
     return errors
 
