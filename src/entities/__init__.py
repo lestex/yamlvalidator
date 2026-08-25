@@ -3,6 +3,7 @@ import importlib
 from src.entities.bucket import Bucket
 from src.entities.role import Role
 from src.entities.secret import Secret
+from src.entities.service_account import ServiceAccount
 
 
 def get_supported_entities() -> list[str]:
@@ -22,6 +23,7 @@ def get_entity(type_: str) -> type:
         'bucket': Bucket,
         'secret': Secret,
         'role': Role,
+        'sa': ServiceAccount,
     }
     entity = entities[type_]
     return entity
