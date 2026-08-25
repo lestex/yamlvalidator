@@ -4,7 +4,6 @@ from typing import Union
 
 from src.config import GSA
 from src.config import Config
-from src.lib.cache import FileCache
 from src.lib.gcp_client import GCPClient
 
 
@@ -154,9 +153,8 @@ def _check_service_account_exists(sa: str, config: Config) -> list[str]:
 
 def _check_group_exists(group: str, config: Config) -> list[str]:
     errors: list[str] = []
-    # check the `group` in the file cache
-    fc = FileCache(config.cache_file)
-    if not fc.get(group):
+    # check the `group` in the file cache, built once per run
+    if not config.group_cache.get(group):
         errors.append(
             f"{group!r} doesn't exist in GCP, create "
             'it first or check it is in the cache'

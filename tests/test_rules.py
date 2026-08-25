@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+from src.config import get_config
 from src.rules import _validate_team
 from src.rules.permissions import _check_group_exists
 from src.rules.permissions import _check_member_service_account
@@ -76,25 +77,36 @@ def test_check_member_service_account_extra_at_sign():
 
 # _check_group_exists
 class MockFileCache:
+    opened = 0
+
     def __init__(self, cache_path: str):
-        pass
+        MockFileCache.opened += 1
 
     def get(self, group):
         return group != 'nonexistent_group'
 
 
 def test_check_group_exists():
-    with patch('src.rules.permissions.FileCache', MockFileCache):
-        errors = _check_group_exists(
-            'existing_group', MagicMock(cache_path='dummy_cache_path')
-        )
-        assert errors == []
+    config = MagicMock(group_cache=MockFileCache('dummy_cache_path'))
+
+    errors = _check_group_exists('existing_group', config)
+    assert errors == []
 
     # Group doesn't exist
-    with patch('src.rules.permissions.FileCache', MockFileCache):
-        errors = _check_group_exists(
-            'nonexistent_group', MagicMock(cache_path='dummy_cache_path')
-        )
-        assert errors == [
-            "'nonexistent_group' doesn't exist in GCP, create it first or check it is in the cache"
-        ]
+    errors = _check_group_exists('nonexistent_group', config)
+    assert errors == [
+        "'nonexistent_group' doesn't exist in GCP, create it first or check it is in the cache"
+    ]
+
+
+def test_group_cache_is_built_once(config_file):
+    """The cache file is read once per run, not once per member."""
+    cfg = get_config(config_file)
+    cfg.update('cache_file', 'dummy_cache_path')
+
+    MockFileCache.opened = 0
+    with patch('src.config.FileCache', MockFileCache):
+        for _ in range(50):
+            _check_group_exists('a_group', cfg)
+
+    assert MockFileCache.opened == 1

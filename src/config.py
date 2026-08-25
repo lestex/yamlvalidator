@@ -3,6 +3,7 @@ import re
 from typing import Any
 from typing import Optional
 
+from src.lib.cache import FileCache
 from src.utils import read_file
 
 # a GCP service account email must match this pattern
@@ -35,11 +36,19 @@ class Config:
         # state that belongs to a single validation run, not to the
         # process: keeping it here bounds its lifetime to this config
         self._seen_names: set[Optional[str]] = set()
+        self._group_cache: Optional[FileCache] = None
 
     @property
     def seen_names(self) -> set[Optional[str]]:
         """Entity names already validated during this run."""
         return self._seen_names
+
+    @property
+    def group_cache(self) -> FileCache:
+        """The group membership cache, read from disk once per run."""
+        if self._group_cache is None:
+            self._group_cache = FileCache(self.cache_file)
+        return self._group_cache
 
     # this allows to construct the config object with any field
     def __getattr__(self, name: str) -> Any:
