@@ -11,6 +11,9 @@ from src.rules.permissions import _validate_permissions_members_list
 
 ROTATION_REGEX = re.compile('^\\d{1,9}s$')
 
+# a key must not rotate more often than once a day
+MIN_ROTATION_PERIOD_SECONDS = 86400
+
 
 VALID_KEYPURPOSE = [
     'CRYPTO_KEY_PURPOSE_UNSPECIFIED',
@@ -97,10 +100,10 @@ def validate_key_rotation_period(key: Key, config: Config) -> list[str]:
     if key.key_rotation_period:
         if re.fullmatch(ROTATION_REGEX, key.key_rotation_period):
             rotation = key.key_rotation_period.split('s')[0]
-            if int(rotation) < 84600:
+            if int(rotation) < MIN_ROTATION_PERIOD_SECONDS:
                 errors.append(
-                    "'key_rotation_period' must be "
-                    'greater than a 86400 seconds'
+                    "'key_rotation_period' must be at least "
+                    f'{MIN_ROTATION_PERIOD_SECONDS} seconds'
                 )
         else:
             errors.append(

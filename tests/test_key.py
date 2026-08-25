@@ -2,8 +2,10 @@ import pytest
 
 from src.config import get_config
 from src.entities import get_entity
+from src.rules.key import MIN_ROTATION_PERIOD_SECONDS
 from src.rules.key import VALID_KEYPURPOSE
 from src.rules.key import VALID_PROTECTION_LEVELS
+from src.rules.key import validate_key_rotation_period
 from src.validators.key import KeyValidator
 
 
@@ -136,7 +138,7 @@ test_data = [
         # filename
         'key008_keyring.yml',
         # validation result
-        ["'key_rotation_period' must be greater than a 86400 seconds"],
+        ["'key_rotation_period' must be at least 86400 seconds"],
     ),
     (
         # invalid key
@@ -299,6 +301,27 @@ def test_key(test_input, filename, expected, config_file):
     validator.validate(keyring, cfg)
 
     assert sorted(validator.errors) == sorted(expected)
+
+
+@pytest.mark.parametrize(
+    'period,expected',
+    [
+        # one second under a day is rejected
+        (f'{MIN_ROTATION_PERIOD_SECONDS - 1}s', False),
+        # exactly a day is accepted
+        (f'{MIN_ROTATION_PERIOD_SECONDS}s', True),
+        # the transposed 84600 used to let this through
+        ('85000s', False),
+    ],
+)
+def test_key_rotation_period_boundary(period, expected, config_file):
+    """The threshold is 86400, not the transposed 84600."""
+    key = get_entity('key')(name='key100', key_rotation_period=period)
+    cfg = get_config(config_file)
+
+    errors = validate_key_rotation_period(key, cfg)
+
+    assert (errors == []) is expected
 
 
 def test_key_duplicate_name(config_file):
