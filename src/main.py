@@ -181,3 +181,7 @@ def main(
     if errors:
         print(errors)
         raise typer.Exit(code=1)
+
+
+if __name__ == '__main__':
+    app()
