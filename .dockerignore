@@ -1,0 +1,8 @@
+Dockerfile
+.dockerignore
+.editorconfig
+.git
+.pre-commit-config.yaml
+.vscode
+Makefile
+tests
