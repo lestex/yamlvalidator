@@ -240,6 +240,31 @@ def test_service_account(test_input, filename, expected, config_file):
     assert sorted(validator.errors) == sorted(expected)
 
 
+def test_service_account_duplicate_name(config_file):
+    """The same name twice in one run is a duplicate.
+
+    Uniqueness state belongs to the config, so both entities must be
+    validated against the same one.
+    """
+    type_ = 'sa'
+    validator = ServiceAccountValidator()
+    cfg = get_config(config_file)
+    cfg.update('filename', 'pl-testsa007_sa.yml')
+    cfg.update('skip_group_check', True)
+    cfg.update('skip_service_account_check', True)
+
+    test_input = {'account_id': 'pl-testsa007'}
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    validator.clear()
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    assert (
+        "A duplicate object with name 'pl-testsa007' already exists"
+        in validator.errors
+    )
+
+
 def test_service_account_wrong_member_entity(config_file):
     type_ = 'sa'
     validator = ServiceAccountValidator()
@@ -269,28 +294,3 @@ def test_service_account_wrong_member_entity(config_file):
 
     assert sorted(validator.errors) == sorted(expected)
     validator.clear()
-
-
-def test_service_account_duplicate_name(config_file):
-    """The same name twice in one run is a duplicate.
-
-    Uniqueness state belongs to the config, so both entities must be
-    validated against the same one.
-    """
-    type_ = 'sa'
-    validator = ServiceAccountValidator()
-    cfg = get_config(config_file)
-    cfg.update('filename', 'pl-testsa007_sa.yml')
-    cfg.update('skip_group_check', True)
-    cfg.update('skip_service_account_check', True)
-
-    test_input = {'account_id': 'pl-testsa007'}
-
-    validator.validate(get_entity(type_)(**test_input), cfg)
-    validator.clear()
-
-    validator.validate(get_entity(type_)(**test_input), cfg)
-    assert (
-        "A duplicate object with name 'pl-testsa007' already exists"
-        in validator.errors
-    )

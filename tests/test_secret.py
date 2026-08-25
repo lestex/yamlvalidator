@@ -182,6 +182,36 @@ def test_secret(test_input, filename, expected, config_file):
     assert sorted(validator.errors) == sorted(expected)
 
 
+def test_secret_duplicate_name(config_file):
+    """The same name twice in one run is a duplicate.
+
+    Uniqueness state belongs to the config, so both entities must be
+    validated against the same one.
+    """
+    type_ = 'secret'
+    validator = SecretValidator()
+    cfg = get_config(config_file)
+    cfg.update('filename', 'test005_secret.yml')
+    cfg.update('skip_group_check', True)
+    cfg.update('skip_service_account_check', True)
+
+    test_input = {
+        'name': 'test005',
+        'team': 'team',
+        'category': 'test_category',
+        'labels': {'app1': 'set'},
+    }
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    validator.clear()
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    assert (
+        "A duplicate object with name 'test005' already exists"
+        in validator.errors
+    )
+
+
 def test_secret_wrong_member_entity(config_file):
     type_ = 'secret'
     validator = SecretValidator()
@@ -217,33 +247,3 @@ def test_secret_wrong_member_entity(config_file):
 
     assert sorted(validator.errors) == sorted(expected)
     validator.clear()
-
-
-def test_secret_duplicate_name(config_file):
-    """The same name twice in one run is a duplicate.
-
-    Uniqueness state belongs to the config, so both entities must be
-    validated against the same one.
-    """
-    type_ = 'secret'
-    validator = SecretValidator()
-    cfg = get_config(config_file)
-    cfg.update('filename', 'test005_secret.yml')
-    cfg.update('skip_group_check', True)
-    cfg.update('skip_service_account_check', True)
-
-    test_input = {
-        'name': 'test005',
-        'team': 'team',
-        'category': 'test_category',
-        'labels': {'app1': 'set'},
-    }
-
-    validator.validate(get_entity(type_)(**test_input), cfg)
-    validator.clear()
-
-    validator.validate(get_entity(type_)(**test_input), cfg)
-    assert (
-        "A duplicate object with name 'test005' already exists"
-        in validator.errors
-    )
