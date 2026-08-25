@@ -31,6 +31,11 @@ def read_file(filename: str) -> dict:
 
 
 def list_files(type_: str, path: Optional[str] = None) -> Generator:
+    """Yields the names of this type's resource files in `path`.
+
+    Directories are skipped: a directory named `x_bucket.yml` is not a
+    resource file.
+    """
     for file in os.scandir(path=path):
-        if file.name.endswith(f'_{type_}.yml'):
+        if file.name.endswith(f'_{type_}.yml') and file.is_file():
             yield file.name

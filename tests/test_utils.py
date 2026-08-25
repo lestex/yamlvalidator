@@ -4,6 +4,7 @@ import pytest
 
 from src.entities import get_supported_entities
 from src.utils import NotAMappingError
+from src.utils import list_files
 from src.utils import read_file
 
 
@@ -42,3 +43,13 @@ def test_read_file_not_a_mapping(tmp_path):
 
     with pytest.raises(NotAMappingError, match='must contain a mapping'):
         read_file(str(listy))
+
+
+def test_list_files_skips_directories(tmp_path):
+    """A directory named like a resource file is not a resource file."""
+    (tmp_path / 'real_bucket.yml').write_text('{}')
+    (tmp_path / 'adirectory_bucket.yml').mkdir()
+
+    found = list(list_files('bucket', str(tmp_path)))
+
+    assert found == ['real_bucket.yml']
