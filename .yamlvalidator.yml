@@ -1,0 +1,47 @@
+---
+# Example configuration. Every option below is optional; the defaults
+# are shown in comments.
+
+# Entity types allowed to appear as a member of a permission.
+# default: [user, serviceAccount, group]
+allowed_types:
+- user
+- serviceAccount
+- group
+
+# Groups must belong to one of these domains.
+# An empty list disables the check. default: []
+allowed_group_domains:
+- example.com
+
+# Permissions are normally granted to groups rather than to individual
+# users. Users from these domains are accepted anyway. default: []
+allowed_user_domains: []
+
+# Individual users allowed as an exception to the rule above. default: []
+allowed_user_emails:
+- exception@example.com
+
+# Service accounts whose project (the part after '@') starts with this
+# prefix are considered ours and are checked for existence in GCP.
+# An empty prefix means every service account is checked. default: ''
+sa_project_prefix: my-org-
+
+# A service account's `account_id` must contain this substring.
+# An empty value disables the check. default: ''
+sa_id_substring: sa-
+
+# Service accounts allowed without the substring above. default: []
+allowed_service_accounts:
+- legacy-deploy
+
+# Optional HTTP endpoint used to verify that a resource's `team` exists.
+# The team name is appended to the URL and a 200 response means valid.
+# Leave unset to disable. default: null
+# team_validation_url: https://teams.example.com/api/team?name=
+
+# Checks can also be skipped from the CLI with the matching --skip-* flag.
+# default: false
+skip_team_labels_check: false
+skip_group_check: false
+skip_service_account_check: false
