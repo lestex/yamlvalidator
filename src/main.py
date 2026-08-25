@@ -6,6 +6,7 @@ import yaml
 from typing_extensions import Annotated
 
 from src.config import Config
+from src.config import UnknownConfigKeyError
 from src.config import get_config
 from src.entities import get_entity
 from src.entities import get_supported_entities
@@ -160,7 +161,11 @@ def main(
     validator = get_validator(type_)
     try:
         config = get_config(str(config_file))
-    except (NotAMappingError, yaml.YAMLError) as exc:
+    except (
+        NotAMappingError,
+        UnknownConfigKeyError,
+        yaml.YAMLError,
+    ) as exc:
         raise typer.BadParameter(str(exc), param_hint='--config') from exc
 
     _apply_cli_flags(

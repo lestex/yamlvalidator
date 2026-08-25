@@ -28,9 +28,22 @@ DEFAULTS: dict[str, Any] = {
 }
 
 
+class UnknownConfigKeyError(ValueError):
+    """The config file holds a key this tool does not understand."""
+
+
 class Config:
     def __init__(self, file: str, obj: Optional[dict] = None) -> None:
         self._data = read_file(file)
+        # a misspelled key would otherwise fall through to the default
+        # and silently switch a check off
+        unknown = sorted(set(self._data) - set(DEFAULTS))
+        if unknown:
+            raise UnknownConfigKeyError(
+                f'{file} has unknown option(s): {", ".join(unknown)}. '
+                f'Valid options are: {", ".join(sorted(DEFAULTS))}'
+            )
+
         if obj:
             self._data.update(obj)
         # state that belongs to a single validation run, not to the
