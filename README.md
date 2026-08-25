@@ -52,8 +52,9 @@ make test
 yamlvalidator --type bucket --config .yamlvalidator.yml
 ```
 
-Every file in the working directory named `<name>_<type>.yml` is validated.
-The command exits non-zero and prints one line per problem:
+Every file in the working directory named `<name>_<type>.yml` is validated,
+and the name must match exactly: `myname_bucket.yml` for a bucket called
+`myname`. The command exits non-zero and prints one line per problem:
 
 ```
 Error:my-bucket:Team must be set

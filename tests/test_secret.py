@@ -74,7 +74,7 @@ test_data = [
             'bad_field': 'test',
         },
         # filename
-        'test003_sa.yml',
+        'test003_secret.yml',
         # validation result
         [
             'Team must be set',

@@ -59,7 +59,7 @@ test_data = [
             ],
         },
         # filename
-        'pl-testsa003_role.yml',
+        'pl-testsa003_sa.yml',
         # validation result
         [
             'invalid Service Account',
@@ -79,7 +79,7 @@ test_data = [
             ],
         },
         # filename
-        'pl-testsa004_role.yml',
+        'pl-testsa004_sa.yml',
         # validation result
         [
             'invalid Service Account',

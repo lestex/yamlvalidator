@@ -5,6 +5,7 @@ from unittest.mock import patch
 from googleapiclient.discovery import HttpError
 
 from src.config import get_config
+from src.rules import _validate_filename
 from src.rules import _validate_team
 from src.rules.permissions import _check_group_exists
 from src.rules.permissions import _check_member_service_account
@@ -42,6 +43,31 @@ def test_valid_sa_domain_empty_string():
 
 def test_valid_sa_domain_whitespace_string():
     assert not _valid_sa_domain('   ', sa_config)
+
+
+# _validate_filename
+def test_validate_filename_exact_match():
+    config = MagicMock(filename='myname_bucket.yml')
+
+    assert _validate_filename('myname', 'bucket', config) == []
+
+
+def test_validate_filename_rejects_prefixed_name():
+    """The check is an exact match, not a substring one."""
+    config = MagicMock(filename='prefix_myname_bucket.yml')
+
+    errors = _validate_filename('myname', 'bucket', config)
+
+    assert errors == ['filename must be: myname_bucket.yml']
+
+
+def test_validate_filename_rejects_wrong_type_suffix():
+    """A bucket may not live in a file named for another type."""
+    config = MagicMock(filename='myname_secret.yml')
+
+    errors = _validate_filename('myname', 'bucket', config)
+
+    assert errors == ['filename must be: myname_bucket.yml']
 
 
 # _check_service_account_exists

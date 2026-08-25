@@ -82,7 +82,7 @@ test_data = [
             'table_id': 'page_external',
         },
         # filename
-        'page_external_bigquery_user1_bqdataset.yml',
+        'page_external_bigquery_user1_bqtable.yml',
         # validation result
         [
             "field:'bad_field' is not supported for bqtable",
@@ -115,7 +115,7 @@ test_data = [
             'table_id': 'page_external',
         },
         # filename
-        'page_external_test123_bqdataset.yml',
+        'page_external_test123_bqtable.yml',
         # validation result
         [
             "'members' has a duplicate member 'group:123@example.com'",
@@ -129,7 +129,7 @@ test_data = [
             'table_id': 'page_external',
         },
         # filename
-        'page_external_test1234_bqdataset.yml',
+        'page_external_test1234_bqtable.yml',
         # validation result
         [
             "'dataset_id' must be set",

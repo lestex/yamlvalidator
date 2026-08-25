@@ -79,7 +79,7 @@ test_data = [
             'bad_field': 'test',
         },
         # filename
-        'key004_keyring.yml',
+        'key004_key.yml',
         # validation result
         ["field:'bad_field' is not supported for key"],
     ),
@@ -91,7 +91,7 @@ test_data = [
             'is_version_template': True,
         },
         # filename
-        'key005_keyring.yml',
+        'key005_key.yml',
         # validation result
         [
             "'algorithm' and 'protection_level' must be set "
@@ -106,7 +106,7 @@ test_data = [
             'is_version_template': True,
         },
         # filename
-        'key006_keyring.yml',
+        'key006_key.yml',
         # validation result
         [
             "'algorithm' and 'protection_level' must be set "
@@ -121,7 +121,7 @@ test_data = [
             'is_version_template': True,
         },
         # filename
-        'key007_keyring.yml',
+        'key007_key.yml',
         # validation result
         [
             "'algorithm' and 'protection_level' must be set "
@@ -136,7 +136,7 @@ test_data = [
             'key_rotation_period': '1234s',
         },
         # filename
-        'key008_keyring.yml',
+        'key008_key.yml',
         # validation result
         ["'key_rotation_period' must be at least 86400 seconds"],
     ),
@@ -148,7 +148,7 @@ test_data = [
             'key_rotation_period': '1234',
         },
         # filename
-        'key009_keyring.yml',
+        'key009_key.yml',
         # validation result
         [
             "'key_rotation_period' must be a decimal number with up to "
@@ -166,7 +166,7 @@ test_data = [
             ],
         },
         # filename
-        'key010_keyring.yml',
+        'key010_key.yml',
         # validation result
         [
             "'importer' has a duplicate member "
@@ -184,7 +184,7 @@ test_data = [
             ],
         },
         # filename
-        'key011_keyring.yml',
+        'key011_key.yml',
         # validation result
         [
             "'keyAdmin' has a duplicate member "

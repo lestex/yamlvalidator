@@ -71,14 +71,20 @@ def _validate_unique(name: Optional[str], config: Config) -> list[str]:
     return errors
 
 
-def _check_filename(name: Optional[str], config: Config) -> bool:
+def _expected_filename(name: Optional[str], class_name: str) -> str:
+    """The one filename an object of this name may live in."""
+    return f'{name}_{class_name}.yml'
+
+
+def _check_filename(
+    name: Optional[str], class_name: str, config: Config
+) -> bool:
     """Helper function should not be called as a validator function.
     Returns:
-    True - if object's name match the team in filename.
+    True - if the file is named exactly after the object.
     False - otherwise
     """
-    filename = config.filename
-    return True if filename and f'{name}_' in filename else False
+    return config.filename == _expected_filename(name, class_name)
 
 
 def _validate_filename(
@@ -86,9 +92,9 @@ def _validate_filename(
 ) -> list[str]:
     """Validates object created in the proper file"""
     errors = []
-    right_file = _check_filename(name, config)
-    if not right_file:
-        errors.append(f'filename must be: {name}_{class_name}.yml')
+    expected = _expected_filename(name, class_name)
+    if config.filename != expected:
+        errors.append(f'filename must be: {expected}')
     return errors
 
 
