@@ -40,6 +40,28 @@ def validate_path(value: Path):
     return value
 
 
+def _apply_cli_flags(
+    config: Config, cli_flags: dict[str, Optional[bool]]
+) -> None:
+    """A cli flag takes precedence when it is passed, otherwise the
+    value from the config file (or its default) stands."""
+    for flag, value in cli_flags.items():
+        if value is not None:
+            config.update(flag, value)
+
+
+def _resolve_cache_file(config: Config, cache_file: Path) -> None:
+    """The group check is the only reader of the cache, so require the
+    file only once the resolved config says that check will run."""
+    if not config.skip_group_check and not cache_file.is_file():
+        raise typer.BadParameter(
+            f'File: {str(cache_file)!r} does not exist.',
+            param_hint='--cache-file',
+        )
+
+    config.update('cache_file', str(cache_file))
+
+
 def validate(validator: BaseValidator, type_: str, config: Config) -> Errors:
     errors = Errors()
 
@@ -124,11 +146,12 @@ def main(
             help='Show config',
         ),
     ] = False,
+    # not validated by a callback: the cache is only read when the group
+    # check runs, and that may be switched off by the config file
     cache_file: Annotated[
         Path,
         typer.Option(
             '--cache-file',
-            callback=validate_path,
             help='Cache file location',
         ),
     ] = Path('.membership_cache'),
@@ -140,19 +163,15 @@ def main(
     except (NotAMappingError, yaml.YAMLError) as exc:
         raise typer.BadParameter(str(exc), param_hint='--config') from exc
 
-    # a cli flag takes precedence when it is passed, otherwise the value
-    # from the config file (or its default) stands
-    cli_flags = {
-        'skip_team_labels_check': skip_team_labels_check,
-        'skip_group_check': skip_group_check,
-        'skip_service_account_check': skip_service_account_check,
-    }
-    for flag, value in cli_flags.items():
-        if value is not None:
-            config.update(flag, value)
-
-    # pass valid cache file to a config object
-    config.update('cache_file', str(cache_file))
+    _apply_cli_flags(
+        config,
+        {
+            'skip_team_labels_check': skip_team_labels_check,
+            'skip_group_check': skip_group_check,
+            'skip_service_account_check': skip_service_account_check,
+        },
+    )
+    _resolve_cache_file(config, cache_file)
 
     if show_config:
         print(config.to_json())

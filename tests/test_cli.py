@@ -134,6 +134,46 @@ def test_cli_invalid_bucket(
     assert result.stdout == errors_output
 
 
+def test_cli_no_cache_file_needed_when_group_check_skipped(
+    config_file_skips_enabled,
+):
+    """The cache is only read by the group check, so skipping it must
+    not require the cache file to exist."""
+    result = runner.invoke(
+        app,
+        [
+            '--type',
+            'role',
+            '--config',
+            config_file_skips_enabled,
+            '--cache-file',
+            '.does_not_exist',
+            '--show-config',
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert 'does not exist' not in result.stdout
+
+
+def test_cli_cache_file_required_when_group_check_runs(config_file):
+    """With the group check on, a missing cache file is a usage error."""
+    result = runner.invoke(
+        app,
+        [
+            '--type',
+            'role',
+            '--config',
+            config_file,
+            '--cache-file',
+            '.does_not_exist',
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert 'does not exist' in result.stdout
+
+
 def test_cli_malformed_yaml_file(
     config_file, malformed_bucket_file, membership_cache
 ):
