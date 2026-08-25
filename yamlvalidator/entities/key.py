@@ -10,6 +10,8 @@ class Key(BaseYamlEntity):
     A subclass of `BaseYamlEntity` and thus includes a name.
     """
 
+    required = ('name', 'keyring_name')
+
     keyring_name: Optional[str] = None
     key_purpose: Optional[str] = None
     key_rotation_period: Optional[str] = None

@@ -1,20 +1,13 @@
 from yamlvalidator.config import Config
 from yamlvalidator.entities.secret import Secret
-from yamlvalidator.rules import _validate_category
 from yamlvalidator.rules import _validate_fields
 from yamlvalidator.rules import _validate_filename
 from yamlvalidator.rules import _validate_labels
-from yamlvalidator.rules import _validate_name
 from yamlvalidator.rules import _validate_team
 from yamlvalidator.rules import _validate_unique
 from yamlvalidator.rules.permissions import _validate_members_unique
 from yamlvalidator.rules.permissions import _validate_permissions
 from yamlvalidator.rules.permissions import _validate_permissions_members_dict
-
-
-def validate_name(secret: Secret, config: Config) -> list[str]:
-    """Validate secret name present"""
-    return _validate_name(secret.name, config)
 
 
 def validate_team(secret: Secret, config: Config) -> list[str]:
@@ -40,11 +33,6 @@ def validate_permissions(secret: Secret, config: Config) -> list[str]:
     return _validate_permissions(
         secret.permission_types, secret.permissions, config
     )
-
-
-def validate_category(secret: Secret, config: Config) -> list[str]:
-    """Validate secret has category"""
-    return _validate_category(secret.category, config)
 
 
 def validate_filename(secret: Secret, config: Config) -> list[str]:

@@ -10,6 +10,8 @@ class Secret(BaseYamlEntity):
     A subclass of `BaseYamlEntity` and thus includes a name.
     """
 
+    required = ('name', 'team', 'category')
+
     permissions: Optional[dict[str, list[str]]] = None
 
     team: Optional[str] = None

@@ -1,7 +1,5 @@
 from yamlvalidator.config import Config
 from yamlvalidator.entities.service_account import ServiceAccount
-from yamlvalidator.rules import _validate_description
-from yamlvalidator.rules import _validate_display_name
 from yamlvalidator.rules import _validate_fields
 from yamlvalidator.rules import _validate_filename
 from yamlvalidator.rules import _validate_unique
@@ -52,16 +50,6 @@ def validate_fields(sa: ServiceAccount, config: Config) -> list[str]:
     """Validates service account fields are same as defined in dataclass"""
     fields = sa.to_dict()
     return _validate_fields(sa.class_name, sa.valid_fields, fields, config)
-
-
-def validate_description(sa: ServiceAccount, config: Config) -> list[str]:
-    """Validate service account description present"""
-    return _validate_description(sa.description, config)
-
-
-def validate_display_name(sa: ServiceAccount, config: Config) -> list[str]:
-    """Validate service account display_name present"""
-    return _validate_display_name(sa.display_name, config)
 
 
 def validate_members_unique(sa: ServiceAccount, config: Config) -> list[str]:

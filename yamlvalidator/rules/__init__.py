@@ -3,28 +3,44 @@ from typing import Optional
 import requests
 
 from yamlvalidator.config import Config
+from yamlvalidator.entities.base import BaseYamlEntity
+
+
+# DECLARATIVE RULES
+# these read the entity's own declaration, so they are wired into a
+# validator as-is rather than wrapped per resource type
+def validate_required(entity: BaseYamlEntity, config: Config) -> list[str]:
+    """Every field the entity declares required must be present."""
+    errors = []
+    # read from the class: __init__ setattrs arbitrary yaml keys,
+    # so an instance attribute must not be able to shadow this
+    for field in type(entity).required:
+        if not getattr(entity, field, None):
+            errors.append(f'{field!r} must be set')
+    return errors
+
+
+def validate_non_empty(entity: BaseYamlEntity, config: Config) -> list[str]:
+    """A declared field may be omitted, but not left empty."""
+    errors = []
+    for field in type(entity).non_empty_if_set:
+        if getattr(entity, field, None) == '':
+            errors.append(f'{field!r} must be set')
+    return errors
 
 
 # COMMON VALIDATION RULES
 # are not supposed to be used directly
 # use a wrapper function instead for a specific validator type
-def _validate_name(name: Optional[str], config: Config) -> list[str]:
-    """Validate name present"""
-    errors = []
-    if not name:
-        errors.append('Name must be set')
-    return errors
-
-
 def _validate_team(team: Optional[str], config: Config) -> list[str]:
-    """Validate object team present and team name is valid.
+    """Validate the team name against the remote directory.
 
-    The team name is only checked against a remote directory when
+    Only checked when
     `team_validation_url` is configured and the check is not skipped.
     """
-    errors = []
+    errors: list[str] = []
     if not team:
-        errors.append('Team must be set')
+        # absence is reported by validate_required
         return errors
 
     url = config.team_validation_url
@@ -40,14 +56,6 @@ def _validate_team(team: Optional[str], config: Config) -> list[str]:
     if response.status_code != 200:
         errors.append(f'{team!r} is invalid team name')
 
-    return errors
-
-
-def _validate_category(category: Optional[str], config: Config) -> list[str]:
-    """Validate object category present"""
-    errors = []
-    if not category:
-        errors.append('Category must be set')
     return errors
 
 
@@ -106,24 +114,4 @@ def _validate_fields(
     for key in fields.keys():
         if key not in valid_fields:
             errors.append(f'field:{key!r} is not supported for {class_name}')
-    return errors
-
-
-def _validate_description(
-    description: Optional[str], config: Config
-) -> list[str]:
-    """Validate description present"""
-    errors = []
-    if description == '':
-        errors.append("'description' must be set")
-    return errors
-
-
-def _validate_display_name(
-    display_name: Optional[str], config: Config
-) -> list[str]:
-    """Validate display_name present"""
-    errors = []
-    if display_name == '':
-        errors.append("'display_name' must be set")
     return errors

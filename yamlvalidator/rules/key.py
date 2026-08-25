@@ -4,7 +4,6 @@ from yamlvalidator.config import Config
 from yamlvalidator.entities.key import Key
 from yamlvalidator.rules import _validate_fields
 from yamlvalidator.rules import _validate_filename
-from yamlvalidator.rules import _validate_name
 from yamlvalidator.rules import _validate_unique
 from yamlvalidator.rules.permissions import _validate_members_unique
 from yamlvalidator.rules.permissions import _validate_permissions_members_list
@@ -65,11 +64,6 @@ VALID_PROTECTION_LEVELS = [
 ]
 
 
-def validate_name(key: Key, config: Config) -> list[str]:
-    """Validate key name present"""
-    return _validate_name(key.name, config)
-
-
 def validate_unique(key: Key, config: Config) -> list[str]:
     """Validates key is unique"""
     return _validate_unique(key.name, config)
@@ -84,14 +78,6 @@ def validate_fields(key: Key, config: Config) -> list[str]:
 def validate_filename(key: Key, config: Config) -> list[str]:
     """Validates key created in the right file"""
     return _validate_filename(key.name, key.class_name, config)
-
-
-def validate_keyring_name(key: Key, config: Config) -> list[str]:
-    """Validates key keyring_name set"""
-    errors = []
-    if not key.keyring_name or key.keyring_name == '':
-        errors.append("'keyring_name' must be set")
-    return errors
 
 
 def validate_key_rotation_period(key: Key, config: Config) -> list[str]:

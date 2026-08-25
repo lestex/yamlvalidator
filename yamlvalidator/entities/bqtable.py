@@ -8,6 +8,8 @@ from yamlvalidator.entities.base import BaseYamlEntity
 class BQTable(BaseYamlEntity):
     """Class representation of bigquery table iam"""
 
+    required = ('dataset_id', 'table_id')
+
     role: Optional[str] = None
     members: Optional[list[str]] = None
     dataset_id: Optional[list[str]] = None

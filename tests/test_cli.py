@@ -126,7 +126,7 @@ def test_cli_invalid_bucket(
 
     errors_output = ''.join(
         [
-            'Error:testbucket::Team must be set\n',
+            "Error:testbucket::'team' must be set\n",
             'Error:testbucket::filename must be: testbucket_bucket.yml\n',
         ]
     )

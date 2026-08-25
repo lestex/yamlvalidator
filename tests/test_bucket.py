@@ -78,7 +78,7 @@ test_data = [
         'bucket001_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
         ],
     ),
     (
@@ -91,7 +91,7 @@ test_data = [
         # filename
         'bucket_bucket.yml',
         # validation result
-        ['Team must be set', 'filename must be: bucket002_bucket.yml'],
+        ["'team' must be set", 'filename must be: bucket002_bucket.yml'],
     ),
     (
         # invalid bucket validate fields
@@ -105,7 +105,7 @@ test_data = [
         'bucket003_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "field:'bad_field' is not supported for bucket",
         ],
     ),
@@ -121,7 +121,7 @@ test_data = [
         'bucket004_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'notKnown' is not valid, must be ['bucketAdmin', 'objectAdmin', 'objectUser', "
             "'legacyBucketOwner', 'legacyBucketReader', 'legacyBucketWriter', "
             "'legacyObjectOwner', 'legacyObjectReader', 'objectCreator', "
@@ -146,7 +146,7 @@ test_data = [
         'bucket005_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             'invalid Service Account',
             "only groups from ['example.com'] are allowed",
             '123@test.com must not be used here, only specific users or users from '
@@ -170,8 +170,8 @@ test_data = [
         '_bucket.yml',
         # validation result
         [
-            'Name must be set',
-            'Team must be set',
+            "'name' must be set",
+            "'team' must be set",
         ],
     ),
     (
@@ -191,7 +191,7 @@ test_data = [
         'bucket006_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'permissions':'bucketAdmin' has a duplicate member "
             "'group:123@example.com'",
         ],
@@ -214,7 +214,7 @@ test_data = [
         'bucket008_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
         ],
     ),
     (
@@ -234,7 +234,7 @@ test_data = [
         # validation result
         [
             'Invalid entity: 123@example.com',
-            'Team must be set',
+            "'team' must be set",
         ],
     ),
     (
@@ -254,7 +254,7 @@ test_data = [
         'bucket010_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
         ],
     ),
 ]
@@ -326,7 +326,7 @@ def test_bucket_wrong_member_entity(config_file):
         'bucket007_bucket.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'notallowed' is not allowed in 'bucketAdmin', "
             f'must be {sorted(cfg.allowed_types)}',
         ],

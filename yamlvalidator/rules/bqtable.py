@@ -17,24 +17,6 @@ def validate_role(bqtable: BQTable, config: Config) -> list[str]:
     return errors
 
 
-def validate_dataset_id(bqtable: BQTable, config: Config) -> list[str]:
-    """Validates dataset_id is set"""
-    errors = []
-
-    if not bqtable.dataset_id:
-        errors.append("'dataset_id' must be set")
-    return errors
-
-
-def validate_table_id(bqtable: BQTable, config: Config) -> list[str]:
-    """Validates table_id is set"""
-    errors = []
-
-    if not bqtable.table_id:
-        errors.append("'table_id' must be set")
-    return errors
-
-
 def validate_fields(bqtable: BQTable, config: Config) -> list[str]:
     """Validates bqtable has only allowed fields"""
     fields = bqtable.to_dict()

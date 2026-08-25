@@ -48,7 +48,7 @@ test_data = [
         'test001_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
         ],
     ),
     (
@@ -62,7 +62,7 @@ test_data = [
         # filename
         'test001_sa.yml',
         # validation result
-        ['Team must be set', 'filename must be: test002_secret.yml'],
+        ["'team' must be set", 'filename must be: test002_secret.yml'],
     ),
     (
         # invalid secret validate fields
@@ -77,7 +77,7 @@ test_data = [
         'test003_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "field:'bad_field' is not supported for secret",
         ],
     ),
@@ -94,7 +94,7 @@ test_data = [
         'test004_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'notKnown' is not valid, must be ['secretAdmin', 'secretAccessor', "
             "'secretVersionAdder', 'secretVersionManager', 'secretViewer']",
         ],
@@ -118,7 +118,7 @@ test_data = [
         'test005_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             'invalid Service Account',
             "only groups from ['example.com'] are allowed",
             '123@test.com must not be used here, only specific users or users from '
@@ -143,7 +143,7 @@ test_data = [
         'test006_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'permissions':'secretAccessor' has a duplicate member "
             "'group:123@example.com'",
         ],
@@ -158,8 +158,8 @@ test_data = [
         'test009_secret.yml',
         # validation result
         [
-            'Category must be set',
-            'Team must be set',
+            "'category' must be set",
+            "'team' must be set",
             "at least 'app1' label must be set",
         ],
     ),
@@ -234,7 +234,7 @@ def test_secret_wrong_member_entity(config_file):
         'test008_secret.yml',
         # validation result
         [
-            'Team must be set',
+            "'team' must be set",
             "'notallowed' is not allowed in 'secretAccessor', "
             f'must be {sorted(cfg.allowed_types)}',
         ],

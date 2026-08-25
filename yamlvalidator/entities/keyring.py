@@ -9,6 +9,8 @@ class Keyring(BaseYamlEntity):
     A subclass of `BaseYamlEntity` and thus includes a name.
     """
 
+    required = ('name',)
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)

@@ -2,11 +2,15 @@ from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 
+import pytest
 from googleapiclient.discovery import HttpError
 
 from yamlvalidator.config import get_config
+from yamlvalidator.entities import get_entity
 from yamlvalidator.rules import _validate_filename
 from yamlvalidator.rules import _validate_team
+from yamlvalidator.rules import validate_non_empty
+from yamlvalidator.rules import validate_required
 from yamlvalidator.rules.permissions import _check_group_exists
 from yamlvalidator.rules.permissions import _check_member_service_account
 from yamlvalidator.rules.permissions import _check_member_user
@@ -175,3 +179,43 @@ def test_group_cache_is_built_once(config_file):
             _check_group_exists('a_group', cfg)
 
     assert MockFileCache.opened == 1
+
+
+# validate_required / validate_non_empty
+@pytest.mark.parametrize(
+    'type_,expected',
+    [
+        ('bucket', ["'name' must be set", "'team' must be set"]),
+        ('bqtable', ["'dataset_id' must be set", "'table_id' must be set"]),
+        ('keyring', ["'name' must be set"]),
+        # role declares nothing required, as it did before
+        ('role', []),
+    ],
+)
+def test_validate_required_reports_declared_fields(type_, expected):
+    errors = validate_required(get_entity(type_)(), MagicMock())
+
+    assert errors == expected
+
+
+def test_validate_required_passes_when_set():
+    bucket = get_entity('bucket')(name='b', team='platform')
+
+    assert validate_required(bucket, MagicMock()) == []
+
+
+def test_validate_required_ignores_a_yaml_key_of_the_same_name():
+    """__init__ setattrs any yaml key, so `required:` must not shadow."""
+    bucket = get_entity('bucket')(name='b', team='t', required='nonsense')
+
+    assert validate_required(bucket, MagicMock()) == []
+
+
+def test_validate_non_empty_only_complains_when_present_and_empty():
+    sa = get_entity('sa')
+
+    assert validate_non_empty(sa(), MagicMock()) == []
+    assert validate_non_empty(sa(description=''), MagicMock()) == [
+        "'description' must be set"
+    ]
+    assert validate_non_empty(sa(description='real'), MagicMock()) == []

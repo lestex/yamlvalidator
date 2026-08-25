@@ -2,13 +2,7 @@ from yamlvalidator.config import Config
 from yamlvalidator.entities.keyring import Keyring
 from yamlvalidator.rules import _validate_fields
 from yamlvalidator.rules import _validate_filename
-from yamlvalidator.rules import _validate_name
 from yamlvalidator.rules import _validate_unique
-
-
-def validate_name(keyring: Keyring, config: Config) -> list[str]:
-    """Validate keyring name present"""
-    return _validate_name(keyring.name, config)
 
 
 def validate_unique(keyring: Keyring, config: Config) -> list[str]:

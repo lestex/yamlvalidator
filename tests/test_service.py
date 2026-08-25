@@ -74,7 +74,7 @@ service_test_data = [
         'apis_service.yml',
         # validation result
         [
-            "'service' field must be set",
+            "'service' must be set",
         ],
     ),
     (

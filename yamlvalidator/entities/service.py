@@ -10,6 +10,8 @@ class Service(BaseYamlEntity):
     A subclass of `BaseYamlEntity` and thus includes a name.
     """
 
+    required = ('service',)
+
     service: Optional[str] = None
     disable_on_destroy: Optional[bool] = None
 

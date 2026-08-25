@@ -3,14 +3,6 @@ from yamlvalidator.entities.service import Service
 from yamlvalidator.rules import _validate_fields
 
 
-def validate_service(entity: Service, config: Config) -> list[str]:
-    """Validate object `service` (api name) is valid"""
-    errors: list[str] = []
-    if not entity.service:
-        errors.append("'service' field must be set")
-    return errors
-
-
 def validate_disable_on_destroy(entity: Service, config: Config) -> list[str]:
     """Validate object `validate_disable_on_destroy` is valid"""
     errors: list[str] = []

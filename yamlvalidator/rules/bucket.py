@@ -2,17 +2,11 @@ from yamlvalidator.config import Config
 from yamlvalidator.entities.bucket import Bucket
 from yamlvalidator.rules import _validate_fields
 from yamlvalidator.rules import _validate_filename
-from yamlvalidator.rules import _validate_name
 from yamlvalidator.rules import _validate_team
 from yamlvalidator.rules import _validate_unique
 from yamlvalidator.rules.permissions import _validate_members_unique
 from yamlvalidator.rules.permissions import _validate_permissions
 from yamlvalidator.rules.permissions import _validate_permissions_members_dict
-
-
-def validate_name(bucket: Bucket, config: Config) -> list[str]:
-    """Validate bucket name present"""
-    return _validate_name(bucket.name, config)
 
 
 def validate_team(bucket: Bucket, config: Config) -> list[str]:

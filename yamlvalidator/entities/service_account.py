@@ -10,6 +10,8 @@ class ServiceAccount(BaseYamlEntity):
     A subclass of `BaseYamlEntity` and thus includes a name.
     """
 
+    non_empty_if_set = ('description', 'display_name')
+
     account_id: Optional[str] = None
     disabled: Optional[bool] = None
     display_name: Optional[str] = None

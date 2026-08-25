@@ -2,9 +2,8 @@ from typing import Callable
 
 from yamlvalidator.config import Config
 from yamlvalidator.entities.service_account import ServiceAccount
-from yamlvalidator.rules.service_account import validate_description
+from yamlvalidator.rules import validate_non_empty
 from yamlvalidator.rules.service_account import validate_disabled
-from yamlvalidator.rules.service_account import validate_display_name
 from yamlvalidator.rules.service_account import validate_fields
 from yamlvalidator.rules.service_account import validate_filename
 from yamlvalidator.rules.service_account import validate_members_unique
@@ -20,8 +19,7 @@ checks: dict[str, Callable[[ServiceAccount, Config], list[str]]] = {
     'validate_unique': validate_unique,
     'validate_members_unique': validate_members_unique,
     'validate_filename': validate_filename,
-    'validate_description': validate_description,
-    'validate_display_name': validate_display_name,
+    'validate_non_empty': validate_non_empty,
     'validate_disabled': validate_disabled,
     'validate_permissions_members': validate_permissions_members,
 }
