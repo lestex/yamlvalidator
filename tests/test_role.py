@@ -92,18 +92,6 @@ test_data = [
         ],
     ),
     (
-        # invalid role duplicate validation
-        {
-            'role': 'roles/browser',
-        },
-        # filename
-        'browser_role.yml',
-        # validation result
-        [
-            "A duplicate object with name 'roles/browser' already exists",
-        ],
-    ),
-    (
         # invalid role duplicate members
         {
             'role': 'roles/test',
@@ -136,7 +124,31 @@ def test_role(test_input, filename, expected, config_file):
     validator.validate(role, cfg)
 
     assert sorted(validator.errors) == sorted(expected)
+
+
+def test_role_duplicate_name(config_file):
+    """The same name twice in one run is a duplicate.
+
+    Uniqueness state belongs to the config, so both entities must be
+    validated against the same one.
+    """
+    type_ = 'role'
+    validator = RoleValidator()
+    cfg = get_config(config_file)
+    cfg.update('filename', 'browser_role.yml')
+    cfg.update('skip_group_check', True)
+    cfg.update('skip_service_account_check', True)
+
+    test_input = {'role': 'roles/browser'}
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
     validator.clear()
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    assert (
+        "A duplicate object with name 'roles/browser' already exists"
+        in validator.errors
+    )
 
 
 def test_role_wrong_member_entity(config_file):

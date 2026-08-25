@@ -32,6 +32,14 @@ class Config:
         self._data = read_file(file)
         if obj:
             self._data.update(obj)
+        # state that belongs to a single validation run, not to the
+        # process: keeping it here bounds its lifetime to this config
+        self._seen_names: set[Optional[str]] = set()
+
+    @property
+    def seen_names(self) -> set[Optional[str]]:
+        """Entity names already validated during this run."""
+        return self._seen_names
 
     # this allows to construct the config object with any field
     def __getattr__(self, name: str) -> Any:

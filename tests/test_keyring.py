@@ -50,18 +50,6 @@ test_data = [
         # validation result
         ["field:'bad_field' is not supported for keyring"],
     ),
-    (
-        # invalid keyring duplicate validation
-        {
-            'name': 'keyring003',
-        },
-        # filename
-        'keyring003_keyring.yml',
-        # validation result
-        [
-            "A duplicate object with name 'keyring003' already exists",
-        ],
-    ),
 ]
 
 
@@ -79,4 +67,23 @@ def test_keyring(test_input, filename, expected, config_file):
     validator.validate(keyring, cfg)
 
     assert sorted(validator.errors) == sorted(expected)
-    validator.clear()
+
+
+def test_keyring_duplicate_name(config_file):
+    """The same name twice in one run is a duplicate.
+
+    Uniqueness state belongs to the config, so both entities must be
+    validated against the same one.
+    """
+    type_ = 'keyring'
+    validator = KeyringValidator()
+    cfg = get_config(config_file)
+    cfg.update('filename', 'keyring003_keyring.yml')
+
+    validator.validate(get_entity(type_)(name='keyring003'), cfg)
+    assert validator.errors == []
+
+    validator.validate(get_entity(type_)(name='keyring003'), cfg)
+    assert validator.errors == [
+        "A duplicate object with name 'keyring003' already exists"
+    ]

@@ -4,9 +4,6 @@ import requests
 
 from src.config import Config
 
-# a set to validate duplicates
-duplicates: set[Optional[str]] = set()
-
 
 # COMMON VALIDATION RULES
 # are not supposed to be used directly
@@ -68,9 +65,9 @@ def _validate_labels(
 def _validate_unique(name: Optional[str], config: Config) -> list[str]:
     """Validates object is only present once in all files"""
     errors = []
-    if name in duplicates:
+    if name in config.seen_names:
         errors.append(f'A duplicate object with name {name!r} already exists')
-    duplicates.add(name)
+    config.seen_names.add(name)
     return errors
 
 

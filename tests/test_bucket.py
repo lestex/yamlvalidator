@@ -175,21 +175,6 @@ test_data = [
         ],
     ),
     (
-        # invalid bucket duplicate validation
-        {
-            'name': 'bucket005',
-            'team': '',
-            'labels': {'app1': 'not-set'},
-        },
-        # filename
-        'bucket005_bucket.yml',
-        # validation result
-        [
-            "A duplicate object with name 'bucket005' already exists",
-            'Team must be set',
-        ],
-    ),
-    (
         # invalid bucket duplicate members in permissions
         {
             'name': 'bucket006',
@@ -289,7 +274,35 @@ def test_bucket(test_input, filename, expected, config_file):
     validator.validate(bucket, cfg)
 
     assert sorted(validator.errors) == sorted(expected)
+
+
+def test_bucket_duplicate_name(config_file):
+    """The same name twice in one run is a duplicate.
+
+    Uniqueness state belongs to the config, so both entities must be
+    validated against the same one.
+    """
+    type_ = 'bucket'
+    validator = BucketValidator()
+    cfg = get_config(config_file)
+    cfg.update('filename', 'bucket005_bucket.yml')
+    cfg.update('skip_group_check', True)
+    cfg.update('skip_service_account_check', True)
+
+    test_input = {
+        'name': 'bucket005',
+        'team': 'team',
+        'labels': {'app1': 'set'},
+    }
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
     validator.clear()
+
+    validator.validate(get_entity(type_)(**test_input), cfg)
+    assert (
+        "A duplicate object with name 'bucket005' already exists"
+        in validator.errors
+    )
 
 
 def test_bucket_wrong_member_entity(config_file):
