@@ -1,5 +1,6 @@
 from src.validators.base import BaseValidator
 from src.validators.bucket import BucketValidator
+from src.validators.keyring import KeyringValidator
 from src.validators.role import RoleValidator
 from src.validators.secret import SecretValidator
 from src.validators.service import ServiceValidator
@@ -14,6 +15,7 @@ def get_validator(type_: str) -> BaseValidator:
         'role': RoleValidator(),
         'sa': ServiceAccountValidator(),
         'service': ServiceValidator(),
+        'keyring': KeyringValidator(),
     }
     validator = validators[type_]
     return validator
