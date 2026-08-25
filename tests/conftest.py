@@ -1,12 +1,7 @@
 import os
-from unittest.mock import Mock
 
 import pytest
 import yaml
-
-from src.lib.cache import Cache
-from src.lib.cache import CacheManager
-from src.lib.gcp_client import GCPClient
 
 
 @pytest.fixture
@@ -124,21 +119,6 @@ def valid_role_file(pytestconfig, valid_role_object):
 
     yield
     os.remove(path)
-
-
-@pytest.fixture
-def cache():
-    return Mock(spec=Cache)
-
-
-@pytest.fixture
-def gcp_client():
-    return Mock(spec=GCPClient)
-
-
-@pytest.fixture
-def cache_manager(cache, gcp_client):
-    return CacheManager(cache, gcp_client, 'test_project', 'test_role')
 
 
 @pytest.fixture

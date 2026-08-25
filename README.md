@@ -96,6 +96,13 @@ for a documented example. The main options:
 The `--skip-*` flags disable the checks that talk to GCP or to the network,
 which is what you want when running locally or in a test.
 
+### The group membership cache
+
+`--cache-file` is a YAML mapping of group emails that are known to exist.
+The tool only ever reads it — it is populated out-of-band — and it is read
+once per run. It is required only when the group check will actually run,
+so `--skip-group-check` needs no cache file present.
+
 ### Precedence
 
 **A `--skip-*` flag wins when it is passed; otherwise the config file value
