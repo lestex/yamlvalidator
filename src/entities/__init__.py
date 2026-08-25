@@ -1,6 +1,7 @@
 import importlib
 
 from src.entities.bucket import Bucket
+from src.entities.secret import Secret
 
 
 def get_supported_entities() -> list[str]:
@@ -18,6 +19,7 @@ def get_entity(type_: str) -> type:
     """Returns a supported entity class by it's type"""
     entities = {
         'bucket': Bucket,
+        'secret': Secret,
     }
     entity = entities[type_]
     return entity
