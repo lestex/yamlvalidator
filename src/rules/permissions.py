@@ -96,7 +96,7 @@ def _check_member_group(email: str, config: Config) -> list[str]:
 
 def _check_member_service_account(email: str, config: Config) -> list[str]:
     errors = []
-    _, domain = email.split('@')
+    domain = email.rsplit('@', 1)[-1]
     if not GSA.search(domain):
         errors.append('invalid Service Account')
 

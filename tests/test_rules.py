@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from src.rules import _validate_team
 from src.rules.permissions import _check_group_exists
+from src.rules.permissions import _check_member_service_account
 from src.rules.permissions import _check_service_account_exists
 from src.rules.permissions import _valid_sa_domain
 
@@ -61,6 +62,16 @@ def test_check_service_account_exists():
             assert errors == [
                 "'nonexistent_sa' doesn't exist in GCP, create it first"
             ]
+
+
+# _check_member_service_account
+def test_check_member_service_account_extra_at_sign():
+    """An email with two '@' must be reported, not raise ValueError."""
+    config_mock = MagicMock(skip_service_account_check=True)
+
+    errors = _check_member_service_account('a@b@example.com', config_mock)
+
+    assert errors == ['invalid Service Account']
 
 
 # _check_group_exists
