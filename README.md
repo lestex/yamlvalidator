@@ -52,9 +52,8 @@ make test
 yamlvalidator --type bucket --config .yamlvalidator.yml
 ```
 
-Every file in the working directory named `<name>_<type>.yml` is validated,
-and the name must match exactly: `myname_bucket.yml` for a bucket called
-`myname`. The command exits non-zero and prints one line per problem:
+Every file in the working directory named `<name>_<type>.yml` is validated.
+The command exits non-zero and prints one line per problem:
 
 ```
 Error:my-bucket:Team must be set
@@ -78,6 +77,11 @@ Options:
   --help                        Show this message and exit
 ```
 
+Every file in the working directory named `<name>_<type>.yml` is validated,
+and the name must match exactly: `myname_bucket.yml` for a bucket called
+`myname`. A file whose top level is not a mapping is reported as an error
+rather than crashing the run.
+
 ## Configuration
 
 Policy is configuration, not code. See [`.yamlvalidator.yml`](.yamlvalidator.yml)
@@ -95,14 +99,8 @@ for a documented example. The main options:
 | `team_validation_url` | Optional endpoint used to verify a resource's `team`; unset disables the check |
 
 The `--skip-*` flags disable the checks that talk to GCP or to the network,
-which is what you want when running locally or in a test.
-
-### The group membership cache
-
-`--cache-file` is a YAML mapping of group emails that are known to exist.
-The tool only ever reads it — it is populated out-of-band — and it is read
-once per run. It is required only when the group check will actually run,
-so `--skip-group-check` needs no cache file present.
+which is what you want when running locally or in a test. An unknown key in
+the config file is a hard error, so a typo cannot silently switch a check off.
 
 ### Precedence
 
@@ -110,6 +108,13 @@ so `--skip-group-check` needs no cache file present.
 stands, and its default if the file does not set it.** Pass `--no-skip-...`
 to force a check back on from the command line when the config file disables
 it.
+
+### The group membership cache
+
+`--cache-file` is a YAML mapping of group emails that are known to exist.
+The tool only ever reads it — it is populated out-of-band — and it is read
+once per run. It is required only when the group check will actually run,
+so `--skip-group-check` needs no cache file present.
 
 ## Adding a resource type
 
