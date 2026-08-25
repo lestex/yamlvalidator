@@ -1,8 +1,9 @@
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 
 import google.auth
-from googleapiclient.discovery import build
 from googleapiclient.discovery import HttpError
+from googleapiclient.discovery import build
 
 
 class BindingException(Exception):

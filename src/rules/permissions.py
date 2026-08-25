@@ -1,8 +1,9 @@
 import re
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
-from src.config import Config
 from src.config import GSA
+from src.config import Config
 from src.lib.cache import FileCache
 from src.lib.gcp_client import GCPClient
 
