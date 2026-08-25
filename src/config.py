@@ -1,6 +1,7 @@
 import json
 import re
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
 
 from src.utils import read_file
 
@@ -28,7 +29,7 @@ DEFAULTS: dict[str, Any] = {
 
 class Config:
     def __init__(self, file: str, obj: Optional[dict] = None) -> None:
-        self._data = read_file(file) or {}
+        self._data = read_file(file)
         if obj:
             self._data.update(obj)
 
