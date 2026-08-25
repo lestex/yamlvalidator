@@ -4,6 +4,7 @@ description = "Validate yaml based resources"
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["yamlvalidator", "yaml"]
+dynamic = ["version"]
 
 authors = [
   {name = "Andrey Larin", email = "lestex@gmail.com" }
@@ -32,8 +33,6 @@ dev = [
   "pytest==8.0.2",
   "pytest_cov==4.1.0",
 ]
-
-dynamic = ["version"]
 
 [project.urls]  # Optional
 "Homepage" = "https://github.com/lestex/yamlvalidator"
