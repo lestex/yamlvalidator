@@ -120,11 +120,18 @@ def _check_member_user(email: str, config: Config) -> list[str]:
         domain not in allowed_domains
         and email not in config.allowed_user_emails
     ):
-        errors.append(
-            f'{email} must not be used here, only specific users or '
-            f'users from {sorted(allowed_domains)} allowed, '
-            "use 'group' instead"
-        )
+        if allowed_domains:
+            errors.append(
+                f'{email} must not be used here, only specific users or '
+                f'users from {sorted(allowed_domains)} allowed, '
+                "use 'group' instead"
+            )
+        else:
+            # no domain is allowed, so naming the empty list helps nobody
+            errors.append(
+                f'{email} must not be used here, only specific users '
+                "are allowed, use 'group' instead"
+            )
     return errors
 
 

@@ -9,6 +9,7 @@ from src.rules import _validate_filename
 from src.rules import _validate_team
 from src.rules.permissions import _check_group_exists
 from src.rules.permissions import _check_member_service_account
+from src.rules.permissions import _check_member_user
 from src.rules.permissions import _check_service_account_exists
 from src.rules.permissions import _valid_sa_domain
 
@@ -115,6 +116,18 @@ def test_check_service_account_api_error_is_not_absence():
     assert len(errors) == 1
     assert errors[0].startswith("could not verify 'some_sa' in GCP")
     assert "doesn't exist" not in errors[0]
+
+
+# _check_member_user
+def test_check_member_user_no_allowed_domains():
+    """With no domains allowed, the message must not read '[] allowed'."""
+    config_mock = MagicMock(allowed_user_domains=[], allowed_user_emails=[])
+
+    errors = _check_member_user('someone@example.com', config_mock)
+
+    assert len(errors) == 1
+    assert '[]' not in errors[0]
+    assert 'only specific users are allowed' in errors[0]
 
 
 # _check_member_service_account
