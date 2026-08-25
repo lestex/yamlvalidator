@@ -2,6 +2,8 @@ import re
 from typing import Optional
 from typing import Union
 
+from googleapiclient.discovery import HttpError
+
 from src.config import GSA
 from src.config import Config
 from src.lib.gcp_client import GCPClient
@@ -140,13 +142,20 @@ def _valid_sa_domain(member: str, config: Config) -> bool:
 
 
 def _check_service_account_exists(sa: str, config: Config) -> list[str]:
-    errors = []
+    errors: list[str] = []
+    if not (re.match('[^/]+$', sa) and _valid_sa_domain(sa, config)):
+        return errors
+
     client = GCPClient()
-    if (
-        re.match('[^/]+$', sa)
-        and _valid_sa_domain(sa, config)
-        and not client.service_account_exists(sa)
-    ):
+    try:
+        exists = client.service_account_exists(sa)
+    except HttpError as exc:
+        # an api error is not evidence of absence: say so rather than
+        # telling the developer to create an account that may exist
+        errors.append(f'could not verify {sa!r} in GCP: {exc}')
+        return errors
+
+    if not exists:
         errors.append(f"{sa!r} doesn't exist in GCP, create it first")
     return errors
 

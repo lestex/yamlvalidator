@@ -41,6 +41,13 @@ class GCPClient:
         return self._iam
 
     def service_account_exists(self, sa_name: str) -> bool:
+        """Returns True if the service account exists in GCP.
+
+        Raises:
+            HttpError: the API answered with anything other than a 404,
+                so existence could not be established. A 403 from a
+                missing permission must not read as "does not exist".
+        """
         # https://googleapis.github.io/google-api-python-client/docs/dyn/iam_v1.projects.serviceAccounts.html#get
         name = f'projects/-/serviceAccounts/{sa_name}'
         try:
@@ -49,5 +56,4 @@ class GCPClient:
         except HttpError as exc:
             if exc.resp['status'] == '404':
                 return False
-
-        return False
+            raise

@@ -1,5 +1,8 @@
 from unittest.mock import MagicMock
+from unittest.mock import Mock
 from unittest.mock import patch
+
+from googleapiclient.discovery import HttpError
 
 from src.config import get_config
 from src.rules import _validate_team
@@ -63,6 +66,29 @@ def test_check_service_account_exists():
             assert errors == [
                 "'nonexistent_sa' doesn't exist in GCP, create it first"
             ]
+
+
+class RaisingGCPClient:
+    def service_account_exists(self, sa):
+        resp = Mock()
+        resp.__getitem__ = lambda self, key: '403'
+        resp.status = 403
+        resp.reason = 'Forbidden'
+        raise HttpError(resp=resp, content=b'{}')
+
+
+def test_check_service_account_api_error_is_not_absence():
+    """A 403 must read as "could not verify", not "create it first"."""
+    with patch('src.rules.permissions.GCPClient', RaisingGCPClient):
+        with patch(
+            'src.rules.permissions._valid_sa_domain',
+            MagicMock(return_value=True),
+        ):
+            errors = _check_service_account_exists('some_sa', sa_config)
+
+    assert len(errors) == 1
+    assert errors[0].startswith("could not verify 'some_sa' in GCP")
+    assert "doesn't exist" not in errors[0]
 
 
 # _check_member_service_account
